@@ -1,14 +1,6 @@
 # Simple Kubernetes Cluster from a prebuilt Glance Image
 
-This examples shows how to use the `terraform-ovh-publiccloud-k8s` module to 
-launch a simple Kubernetes cluster on OVH Public Cloud, based on a `CoreOS Stable`
-image with kubernetes preinstalled, without post-provisionning.
-
-- [Simple Kubernetes Cluster from a prebuilt Glance Image](#simple-kubernetes-cluster-from-a-prebuilt-glance-image)
-    - [Pre-Requisites](#pre-requisites)
-    - [Configuration](#configuration)
-    - [Launch the cluster](#launch-the-cluster)
-    - [Get started with Kubernetes](#get-started-with-kubernetes)
+This examples shows how to use the terraform-ovh-publiccloud-k8s module to launch a simple Kubernetes cluster on OVH Public Cloud, based on a CoreOS Stable image with kubernetes preinstalled, without post-provisionning.
 
 ## Pre-requisites
 
@@ -61,9 +53,9 @@ image with kubernetes preinstalled, without post-provisionning.
    $ ssh-add ./ssh_key
    ```
 
-## Configuration
+## Quickstart
 
-1. You have to init terraform (run once):
+### Initialisation
 
 ```bash
 $ terraform init
@@ -74,38 +66,35 @@ Initializing modules...
 Terraform has been successfully initialized!
 ```
 
-1. (Optional) Customize default values file, then edit it if needed.
-   This allow terraform to autoload those variables
+### Launch the cluster
 
-   ```bash
-   cp terraform.tfvars.sample terraform.tfvars
-   ```
+You have to choose an openstack region to launch the cluster in, and a keypair name. You can either setup these variables in the customized `.tfvars` file or pass them in the command line.
 
-## Launch the cluster
+In order to list your OpenStack compute regions, you can perform this command:
 
-You have to choose an openstack region to launch the cluster in, and a keypair name and/or ssh public key according to your preferences. You can either setup these variables in the customized `.tfvars` file (see [previous paragraph](#configuration)) or pass them in the command line:
+```bash
+$ openstack catalog show nova
+```
 
-Using an openstack keypair:
+Do not forget to change your region if needed:
+
+```bash
+$ export OS_REGION_NAME=GRA3
+```
+
+If you want to list your registered keypairs in this region:
+
+```bash
+$ openstack keypair list
+```
+
+Then, replace "k8s" with your keypair name:
 
 ```bash
 $ terraform apply -var region=GRA3 -var key_pair=k8s
-[...]
 ```
 
-Or using an ssh public key:
-
-```bash
-$ terraform apply -var region=GRA3 -var public_sshkey=./ssh_key.pub
-[...]
-```
-
-
-This should give you an infra with:
-
-* 3 kubernetes masters in a public network with:
-  * Canal (Flannel + Calico) CNI
-  * Untainted nodes (pods can run on masters)
-  * kube-proxy for services
+This should give you an infra with 3 kubernetes masters in a public network with Canal (Flannel + Calico) CNI, Untainted nodes (pods can run on masters), kube-proxy for services.
 
 ## Get Started with Kubernetes
 
